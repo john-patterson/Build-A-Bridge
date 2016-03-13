@@ -7,8 +7,6 @@ public class CameraController : MonoBehaviour
     public Camera PlayerCamera;
     public ChosenCamera StartingCamera;
 
-    private AudioListener ObliqueCameraAL;
-    private AudioListener PlayerCameraAL;
 
     private bool _testKeyLock = false;
 
@@ -21,8 +19,6 @@ public class CameraController : MonoBehaviour
 
     void Start()
     {
-        ObliqueCameraAL = ObliqueCamera.GetComponent<AudioListener>();
-        PlayerCameraAL = PlayerCamera.GetComponent<AudioListener>();
         SetActiveCamera(StartingCamera);
     }
 
