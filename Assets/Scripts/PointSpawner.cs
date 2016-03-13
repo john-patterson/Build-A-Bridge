@@ -5,74 +5,80 @@ using System.Linq;
 
 public class PointSpawner : MonoBehaviour
 {
-    private int wallMask;
-    public Transform sphere;
-    public Transform plank;
+    private int _wallMask;
+    public Transform Sphere;
+    public Transform Plank;
 
-    public Transform startCliff;
-    public Transform endCliff;
+    public Transform StartCliff;
+    public Transform EndCliff;
 
-    public Transform startPoint;
-    public Transform endPoint;
+    public Transform StartPoint;
+    public Transform EndPoint;
 
-    private bool mouseLock;
-    private bool bridgeDoneLock;
 
-    private Vector3 startCoord;
-    private Vector3 endCoord;
-    private List<Vector3> plankPoints;
-    private List<Transform> planks;
-    private List<Transform> planksList; 
-    private List<HingeJoint> hinges; 
+    private CameraController _cameraController;
+    private bool _mouseLock;
+    private bool _bridgeDoneLock;
+
+    private Vector3 _startCoord;
+    private Vector3 _endCoord;
+    private List<Vector3> _plankPoints;
+    private List<Transform> _planks;
+    private List<Transform> _planksList; 
+    private List<HingeJoint> _hinges; 
 
 	// Use this for initialization
 	void Start ()
 	{
-	    mouseLock = false;
-	    bridgeDoneLock = false;
+	    _mouseLock = false;
+	    _bridgeDoneLock = false;
 
 
-	    wallMask = LayerMask.GetMask("ClickingPlane");
-        plankPoints = new List<Vector3>();
-        planks = new List<Transform>();
-        planksList = new List<Transform>();
-        hinges = new List<HingeJoint>();
+	    _wallMask = LayerMask.GetMask("ClickingPlane");
+        _plankPoints = new List<Vector3>();
+        _planks = new List<Transform>();
+        _planksList = new List<Transform>();
+        _hinges = new List<HingeJoint>();
 
-	    startCoord = startPoint.position;
-	    endCoord = endPoint.position;
+	    _startCoord = StartPoint.position;
+	    _endCoord = EndPoint.position;
 
-	    startCoord.z = 0;
-	    endCoord.z = 0;
+	    _startCoord.z = 0;
+	    _endCoord.z = 0;
 
 	    var everythingMask = LayerMask.GetMask("Default");
         Physics.IgnoreLayerCollision(gameObject.layer, everythingMask);
-    }
+
+	    _cameraController = GameObject.Find("CameraManager").GetComponent<CameraController>();
+	}
 	
 	// Update is called once per frame
 	void FixedUpdate ()
 	{
-        if (bridgeDoneLock) return;
+        if (_bridgeDoneLock) return;
 
         if (Input.GetButton("Fire2"))
         {
-            bridgeDoneLock = true;
-	        foreach (var p in planksList)
+            _bridgeDoneLock = true;
+	        foreach (var p in _planksList)
 	        {
 	            UnfreezePlank(p); 
 	        }
             FinishBridge();
+            _cameraController.SetActiveCamera(CameraController.ChosenCamera.Player);
+
         }
 
 	    if (Input.GetButton("Fire1"))
 	    {
-	        if (mouseLock) return;
+	        if (_mouseLock) return;
 
-	        mouseLock = true;
+	        _mouseLock = true;
 	        SpawnPoint();
 	    }
 	    else
 	    {
-	        mouseLock = false;
+	        _mouseLock = false;
 	    }
 	}
 
@@ -82,31 +88,31 @@ public class PointSpawner : MonoBehaviour
         var camRay = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit planeHit;
 
-        if (!Physics.Raycast(camRay, out planeHit, 100, wallMask)) return;
+        if (!Physics.Raycast(camRay, out planeHit, 100, _wallMask)) return;
 
-        Instantiate(sphere, planeHit.point, Quaternion.identity);
-        if (plankPoints.Count > 0)
+        Instantiate(Sphere, planeHit.point, Quaternion.identity);
+        if (_plankPoints.Count > 0)
         {
-            var plank = DrawPlank(plankPoints.Last(), planeHit.point);
+            var plank = DrawPlank(_plankPoints.Last(), planeHit.point);
 
-            if (planks.Count > 0)
+            if (_planks.Count > 0)
             {
-                var hinge = MakeHinge(plank, planks.Last());
-                hinges.Add(hinge);
+                var hinge = MakeHinge(plank, _planks.Last());
+                _hinges.Add(hinge);
             }
 
-            planks.Add(plank);
-            planksList.Add(plank);
+            _planks.Add(plank);
+            _planksList.Add(plank);
         }
 
-        plankPoints.Add(planeHit.point);
+        _plankPoints.Add(planeHit.point);
     }
 
     Transform DrawPlank(Vector3 p1, Vector3 p2)
     {
         p1.z = 0;
         p2.z = 0;
-        var obj = (Transform)Instantiate(plank, p1, Quaternion.identity);
+        var obj = (Transform)Instantiate(Plank, p1, Quaternion.identity);
         var directionalVector = p2 - p1;
         var distance = directionalVector.magnitude;
 
@@ -122,23 +128,23 @@ public class PointSpawner : MonoBehaviour
 
     void FinishBridge()
     {
-        var firstPoint = plankPoints.First();
-        var lastPoint = plankPoints.Last();
+        var firstPoint = _plankPoints.First();
+        var lastPoint = _plankPoints.Last();
 
-        var startingPlank = DrawPlank(startCoord, firstPoint);
-        var endingPlank = DrawPlank(lastPoint, endCoord);
+        var startingPlank = DrawPlank(_startCoord, firstPoint);
+        var endingPlank = DrawPlank(lastPoint, _endCoord);
 
-        var topPlank = planks.First();
-        var backPlank = planks.Last();
+        var topPlank = _planks.First();
+        var backPlank = _planks.Last();
 
-        planks.Insert(0, startingPlank);
-        planks.Add(endingPlank);
+        _planks.Insert(0, startingPlank);
+        _planks.Add(endingPlank);
 
         var startHinge = MakeHinge(startingPlank, topPlank);
         var endHinge = MakeHinge(endingPlank, backPlank);
 
-        hinges.Insert(0, startHinge);
-        hinges.Add(endHinge);
+        _hinges.Insert(0, startHinge);
+        _hinges.Add(endHinge);
     }
 
     HingeJoint MakeHinge(Component plank1, Component plank2) 
@@ -159,13 +165,13 @@ public class PointSpawner : MonoBehaviour
         return tempHinge;
     }
 
-    void FreezePlank(Transform p)
+    void FreezePlank(Component p)
     {
         var rb = p.gameObject.GetComponent<Rigidbody>();
         rb.isKinematic = true;
     }
 
-    void UnfreezePlank(Transform p)
+    void UnfreezePlank(Component p)
     {
         var rb = p.gameObject.GetComponent<Rigidbody>();
         rb.isKinematic = false;
