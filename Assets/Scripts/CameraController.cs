@@ -5,6 +5,7 @@ public class CameraController : MonoBehaviour
 {
     public Camera ObliqueCamera;
     public Camera PlayerCamera;
+    public ChosenCamera StartingCamera;
 
     private AudioListener ObliqueCameraAL;
     private AudioListener PlayerCameraAL;
@@ -22,7 +23,7 @@ public class CameraController : MonoBehaviour
     {
         ObliqueCameraAL = ObliqueCamera.GetComponent<AudioListener>();
         PlayerCameraAL = PlayerCamera.GetComponent<AudioListener>();
-        SetActiveCamera(ChosenCamera.Oblique);
+        SetActiveCamera(StartingCamera);
     }
 
     void Update()

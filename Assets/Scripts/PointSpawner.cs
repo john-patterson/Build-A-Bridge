@@ -15,6 +15,7 @@ public class PointSpawner : MonoBehaviour
     public Transform StartPoint;
     public Transform EndPoint;
 
+    public bool DebugEnabled = true;
 
     private CameraController _cameraController;
     private bool _mouseLock;
@@ -32,6 +33,7 @@ public class PointSpawner : MonoBehaviour
 	{
 	    _mouseLock = false;
 	    _bridgeDoneLock = false;
+	    _bridgeDoneLock = !DebugEnabled;
 
 
 	    _wallMask = LayerMask.GetMask("ClickingPlane");
