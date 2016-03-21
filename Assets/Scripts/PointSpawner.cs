@@ -5,6 +5,8 @@ using System.Linq;
 
 public class PointSpawner : MonoBehaviour
 {
+   // private InputManager _input;
+
     private int _wallMask;
     public Transform Sphere;
     public Transform Plank;
@@ -26,7 +28,8 @@ public class PointSpawner : MonoBehaviour
     private List<Vector3> _plankPoints;
     private List<Transform> _planks;
     private List<Transform> _planksList; 
-    private List<HingeJoint> _hinges; 
+    private List<HingeJoint> _hinges;
+    private List<Transform> _points;
 
 	// Use this for initialization
 	void Start ()
@@ -41,6 +44,7 @@ public class PointSpawner : MonoBehaviour
         _planks = new List<Transform>();
         _planksList = new List<Transform>();
         _hinges = new List<HingeJoint>();
+        _points = new List<Transform>() {StartPoint, EndPoint};
 
 	    _startCoord = StartPoint.position;
 	    _endCoord = EndPoint.position;
@@ -52,11 +56,14 @@ public class PointSpawner : MonoBehaviour
         Physics.IgnoreLayerCollision(gameObject.layer, everythingMask);
 
 	    _cameraController = GameObject.Find("CameraManager").GetComponent<CameraController>();
+	    //_input = FindObjectOfType<InputManager>();
 	}
 	
 	// Update is called once per frame
 	void FixedUpdate ()
 	{
+	    //_input.PlacePoint();
+
         if (_bridgeDoneLock) return;
 
         if (Input.GetButton("Fire2"))
@@ -92,7 +99,7 @@ public class PointSpawner : MonoBehaviour
 
         if (!Physics.Raycast(camRay, out planeHit, 100, _wallMask)) return;
 
-        Instantiate(Sphere, planeHit.point, Quaternion.identity);
+        _points.Add((Transform)Instantiate(Sphere, planeHit.point, Quaternion.identity));
         if (_plankPoints.Count > 0)
         {
             var plank = DrawPlank(_plankPoints.Last(), planeHit.point);
@@ -147,6 +154,12 @@ public class PointSpawner : MonoBehaviour
 
         _hinges.Insert(0, startHinge);
         _hinges.Add(endHinge);
+
+        foreach (var point in _points)
+        {
+            point.gameObject.SetActive(false);
+        }
+
     }
 
     HingeJoint MakeHinge(Component plank1, Component plank2) 
