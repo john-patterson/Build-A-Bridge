@@ -170,7 +170,7 @@ public class PointSpawner : MonoBehaviour
         tempHinge.autoConfigureConnectedAnchor = true;
         tempHinge.enablePreprocessing = false;
         tempHinge.axis = new Vector3(1, 0, 0);
-        tempHinge.breakForce = 150;
+        tempHinge.breakForce = 100;
         //tempHinge.useSpring = true;
 
         //tempHinge.anchor = new Vector3(0.0f, 0.5f, 0.0f);

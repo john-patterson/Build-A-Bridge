@@ -38,10 +38,10 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
-        yaw += speedYaw*Input.GetAxis("Mouse X");
-        pitch -= speedPitch*Input.GetAxis("Mouse Y");
+        //yaw += speedYaw*Input.GetAxis("Mouse X");
+        //pitch -= speedPitch*Input.GetAxis("Mouse Y");
 
-        FirstPersonCamera.transform.eulerAngles = new Vector3(pitch, yaw, 0.0f);
+        //FirstPersonCamera.transform.eulerAngles = new Vector3(pitch, yaw, 0.0f);
     }
 
     private void Move(float v, float h)
