@@ -1,0 +1,10 @@
+fileFormatVersion: 2
+guid: 4612a60126cf507449c3adb9239c9cf5
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences:
+  - displaySchema: {fileID: 4900000, guid: 681992c4cf4e730438bbfa54a173d920, type: 3}
+  - linkedCamera: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 

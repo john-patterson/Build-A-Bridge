@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ns2:RUISInputManager xmlns:ns2="http://ruisystem.net/RUISInputManager">
+  <!--Boolean values always with a lower case, e.g. "true" or "false"-->
+  <PSMoveSettings>
+    <enabled value="false" />
+    <ip value="127.0.0.1" />
+    <port value="7899" />
+    <autoConnect value="true" />
+    <enableInGameCalibration value="false" />
+    <maxControllers value="4" />
+  </PSMoveSettings>
+  <KinectSettings>
+    <enabled value="false" />
+    <maxPlayers value="1" />
+    <floorDetection value="true" />
+    <jumpGestureEnabled value="true" />
+  </KinectSettings>
+  <Kinect2Settings>
+    <enabled value="true" />
+    <floorDetection value="true" />
+  </Kinect2Settings>
+  <RazerSettings>
+    <enabled value="false" />
+  </RazerSettings>
+  <OculusDriftSettings>
+    <kinectDriftCorrectionIfAvailable value="false" />
+  </OculusDriftSettings>
+</ns2:RUISInputManager>

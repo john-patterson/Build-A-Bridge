@@ -3,10 +3,10 @@ using System.Collections;
 
 public class CameraController : MonoBehaviour
 {
-    public Camera ObliqueCamera;
-    public Camera PlayerCamera;
+    public RUISCamera ObliqueCamera;
+    public RUISCamera PlayerCamera;
     public ChosenCamera StartingCamera;
-
+    public RUISDisplay MainDisplay;
 
     private bool _testKeyLock = false;
 
@@ -43,16 +43,19 @@ public class CameraController : MonoBehaviour
         switch (newActiveCamera)
         {
             case ChosenCamera.Oblique:
-                PlayerCamera.gameObject.SetActive(false);
                 ObliqueCamera.gameObject.SetActive(true);
+                PlayerCamera.gameObject.SetActive(false);
+                MainDisplay.linkedCamera = ObliqueCamera;
                 CurrentCamera = ChosenCamera.Oblique;
                 break;
             case ChosenCamera.Player:
                 ObliqueCamera.gameObject.SetActive(false);
                 PlayerCamera.gameObject.SetActive(true);
+                MainDisplay.linkedCamera = PlayerCamera;
                 CurrentCamera = ChosenCamera.Player;
                 break;
         }
+        //FindObjectOfType<RUISDisplayManager>().UpdateDisplays();
     }
 
 }

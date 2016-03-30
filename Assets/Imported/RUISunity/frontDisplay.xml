@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ns2:ruisDisplay xmlns:ns2="http://ruisystem.net/display">
+  <displayCenterPosition x="0" y="1.5" z="0" />
+  <displayUp x="0" y="1" z="0" />
+  <displayNormal x="0" y="0" z="-1" />
+  <displaySize width="3" height="3" />
+  <displayResolution width="1024" height="768" />
+  <centerKeystone>
+    <topLeft x="0" y="1" />
+    <topRight x="1" y="1" />
+    <bottomRight x="1" y="0" />
+    <bottomLeft x="0" y="0" />
+  </centerKeystone>
+  <leftKeystone>
+    <topLeft x="0" y="1" />
+    <topRight x="1" y="1" />
+    <bottomRight x="1" y="0" />
+    <bottomLeft x="0" y="0" />
+  </leftKeystone>
+  <rightKeystone>
+    <topLeft x="0" y="1" />
+    <topRight x="1" y="1" />
+    <bottomRight x="1" y="0" />
+    <bottomLeft x="0" y="0" />
+  </rightKeystone>
+</ns2:ruisDisplay>

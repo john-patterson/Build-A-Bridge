@@ -1,0 +1,9 @@
+/*****************************************************************************
+
+Content    :   
+Authors    :   Tuukka Takala, Heikki Heiskanen, Mikael Matveinen
+Copyright  :   Copyright 2015 Tuukka Takala, Heikki Heiskanen, Mikael Matveinen. All Rights reserved.
+Licensing  :   RUIS is distributed under the LGPL Version 3 license for non-commercial use. 
+               If you intend to use RUIS for commercial work, please contact us first.
+
+******************************************************************************/

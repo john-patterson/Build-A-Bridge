@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ns2:RUISPairwiseCalibration xmlns:ns2="http://ruisystem.net/RUISPairwiseCalibration">
+  <Transforms>
+    <PS_Move-Kinect_1>
+      <translate x="0" y="0" z="0" />
+      <rotate r00="1" r01="0" r02="0" r10="0" r11="1" r12="0" r20="0" r21="0" r22="1" />
+    </PS_Move-Kinect_1>
+  </Transforms>
+  <FloorData>
+    <Kinect_1>
+      <floorNormal x="0" y="1" z="0" />
+      <distanceFromFloor value="0" />
+    </Kinect_1>
+  </FloorData>
+</ns2:RUISPairwiseCalibration>

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://ruisystem.net/RUISInputManager"
+	xmlns:tns="http://ruisystem.net/RUISInputManager"
+	elementFormDefault="unqualified" attributeFormDefault="unqualified">
+	  
+	<element name="RUISInputManager" type="tns:RUISInputManagerType"/>
+	
+	<complexType name="RUISInputManagerType">
+		<sequence>
+			<element name="PSMoveSettings" type="tns:PSMoveSettingsType" maxOccurs="1"/>
+			<element name="KinectSettings" type="tns:KinectSettingsType" maxOccurs="1"/>
+			<element name="Kinect2Settings" type="tns:Kinect2SettingsType" maxOccurs="1"/>
+			<element name="RazerSettings" type="tns:RazerSettingsType" maxOccurs="1"/>
+			<element name="OculusDriftSettings" type="tns:OculusDriftSettingsType" maxOccurs="1"/>
+		</sequence>
+	</complexType>
+
+	
+	<complexType name="BooleanType">
+		<attribute name="value" type="boolean" use="required" />
+	</complexType>
+	
+	<complexType name="StringType">
+		<attribute name="value" type="string" use="required" />
+	</complexType>
+	
+	<complexType name="IntType">
+		<attribute name="value" type="int" use="required" />
+	</complexType>
+	
+	<complexType name="PSMoveSettingsType" >
+		<sequence>
+			<element name="enabled" type="tns:BooleanType"/>
+			<element name="ip" type="tns:StringType"/>
+			<element name="port" type="tns:IntType"/>
+			<element name="autoConnect" type="tns:BooleanType"/>
+			<element name="enableInGameCalibration" type="tns:BooleanType"/>
+			<element name="maxControllers" type="tns:IntType"/>
+		</sequence>
+	</complexType>
+
+	<complexType name="KinectSettingsType" >
+		<sequence>
+			<element name="enabled" type="tns:BooleanType"/>
+			<element name="maxPlayers" type="tns:IntType"/>
+			<element name="floorDetection" type="tns:BooleanType"/>
+			<element name="jumpGestureEnabled" type="tns:BooleanType"/>
+		</sequence>
+	</complexType>
+
+	<complexType name="Kinect2SettingsType" mixed="true">
+		<sequence>
+			<element name="enabled" type="tns:BooleanType"/>
+			<element name="floorDetection" type="tns:BooleanType"/>
+		</sequence>
+	</complexType>
+	
+	<complexType name="RazerSettingsType">
+		<sequence>
+			<element name="enabled" type="tns:BooleanType"/>
+		</sequence>
+	</complexType>
+
+	<complexType name="OculusDriftSettingsType">
+		<sequence>
+			<!-- <element name="magnetometerDriftCorrection" type="tns:StringType"/> -->
+			<element name="kinectDriftCorrectionIfAvailable" type="tns:BooleanType"/>
+		</sequence>
+	</complexType>
+
+</schema>

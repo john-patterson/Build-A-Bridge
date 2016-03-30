@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://ruisystem.net/RUISPairwiseCalibration"
+	xmlns:tns="http://ruisystem.net/RUISPairwiseCalibration"
+	elementFormDefault="unqualified" attributeFormDefault="unqualified">
+
+	<element name="RUISPairwiseCalibration" type="tns:RUISPairwiseCalibrationType"/>
+ 
+	<complexType name="RUISPairwiseCalibrationType">
+		<sequence>
+			<element name="Transforms" type="tns:TransformsType" maxOccurs="1"/>
+			<element name="FloorData" type="tns:FloorDataType" maxOccurs="1"/>
+		</sequence>
+	</complexType>
+	
+	<complexType name="TransformsType">
+		<all minOccurs="0">
+			<element name="PS_Move-Kinect_1" type="tns:TransformsFieldsType"/>
+			<element name="PS_Move-Kinect_2" type="tns:TransformsFieldsType"/>
+			<element name="PS_Move-Oculus_DK2" type="tns:TransformsFieldsType"/>
+			<element name="Oculus_DK2-Kinect_1" type="tns:TransformsFieldsType"/>
+			<element name="Oculus_DK2-Kinect_2" type="tns:TransformsFieldsType"/>
+			<element name="Kinect_2-Kinect_1" type="tns:TransformsFieldsType"/>
+		</all>
+	</complexType>
+	
+	<complexType name="FloorDataType">
+		<all minOccurs="0">
+			<element name="Kinect_2" type="tns:FloorDataFieldsType"/>
+			<element name="Kinect_1" type="tns:FloorDataFieldsType"/>
+		</all>
+	</complexType>	
+	
+	<complexType name="TransformsFieldsType">
+		<sequence>
+			<element name="translate" type="tns:TranslateType" minOccurs="1" maxOccurs="1"/>
+			<element name="rotate" type="tns:RotateType" minOccurs="1" maxOccurs="1"/>
+		</sequence>
+	</complexType>
+
+	<complexType name="FloorDataFieldsType">
+		<sequence>
+			<element name="floorNormal" type="tns:FloorNormalType" minOccurs="1" maxOccurs="1"/>
+			<element name="distanceFromFloor" type="tns:DistanceFromFloorType" minOccurs="1" maxOccurs="1"/>
+		</sequence>
+	</complexType>
+	
+	<complexType name="TranslateType">
+		<attribute name="x" type="float" use="required" />
+		<attribute name="y" type="float" use="required" />
+		<attribute name="z" type="float" use="required" />
+	</complexType>
+	
+	<complexType name="RotateType">
+		<attribute name="r00" type="float" use="required"/>
+		<attribute name="r01" type="float" use="required"/>
+		<attribute name="r02" type="float" use="required"/>
+		<attribute name="r10" type="float" use="required"/>
+		<attribute name="r11" type="float" use="required"/>
+		<attribute name="r12" type="float" use="required"/>
+		<attribute name="r20" type="float" use="required"/>
+		<attribute name="r21" type="float" use="required"/>
+		<attribute name="r22" type="float" use="required"/>
+	</complexType>
+	  
+	<complexType name="FloorNormalType">
+		<attribute name="x" type="float" use="required" />
+		<attribute name="y" type="float" use="required" />
+		<attribute name="z" type="float" use="required" />
+	</complexType>
+
+	<complexType name="DistanceFromFloorType">
+		<attribute name="value" type="float" use="required" />
+	</complexType>
+
+</schema>

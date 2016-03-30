@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://ruisystem.net/display"
+	  xmlns:tns="http://ruisystem.net/display"
+	  elementFormDefault="unqualified" attributeFormDefault="unqualified">
+    <element name="ruisDisplay" type="tns:DisplayType"></element>
+	
+	<complexType name="DisplayType">
+		<sequence>
+			<element name="displayCenterPosition" type="tns:Vector3" minOccurs="1" maxOccurs="1"/>
+			<element name="displayUp" type="tns:Vector3" minOccurs="1" maxOccurs="1"/>
+			<element name="displayNormal" type="tns:Vector3" minOccurs="1" maxOccurs="1"/>
+			<element name="displaySize" type="tns:DisplaySizeType" minOccurs="1" maxOccurs="1" />
+			<element name="displayResolution" type="tns:ResolutionType" minOccurs="1" maxOccurs="1"/>
+			<element name="centerKeystone" type="tns:KeystoningCorners" minOccurs="1" maxOccurs="1"/>
+			<element name="leftKeystone" type="tns:KeystoningCorners" minOccurs="1" maxOccurs="1"/>
+			<element name="rightKeystone" type="tns:KeystoningCorners" minOccurs="1" maxOccurs="1"/>
+		</sequence>
+	</complexType>
+
+	<complexType name="KeystoningCorners">
+		<sequence>
+			<element name="topLeft" type="tns:Vector2"/>
+			<element name="topRight" type="tns:Vector2"/>
+			<element name="bottomRight" type="tns:Vector2"/>
+			<element name="bottomLeft" type="tns:Vector2"/>
+		</sequence>
+	</complexType>
+
+	<complexType name="Vector2">
+		<attribute name="x" type="float" use="required" />
+		<attribute name="y" type="float" use="required" />
+	</complexType>
+
+	<complexType name="Vector3">
+		<attribute name="x" type="float" use="required" />
+		<attribute name="y" type="float" use="required" />
+		<attribute name="z" type="float" use="required" />
+	</complexType>
+
+	<complexType name="KinectDistanceFromFloorType">
+		<attribute name="value" type="float" use="required" />
+  </complexType>
+
+  <complexType name="DisplaySizeType">
+	<attribute name="width" type="float" use="required" />
+	<attribute name="height" type="float" use="required" />
+  </complexType>
+
+  <complexType name="ResolutionType">
+		<attribute name="width" type="int" use="required" />
+		<attribute name="height" type="int" use="required" />
+  </complexType>
+</schema>
