@@ -2,6 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Leap;
+using Leap.Unity;
 
 public class PointSpawner : MonoBehaviour
 {
@@ -20,9 +22,12 @@ public class PointSpawner : MonoBehaviour
     public bool DebugEnabled = true;
     public float JointStrength = 100.0f;
 
+    public RigidFinger PointerFinger;
+
     private CameraController _cameraController;
     private bool _mouseLock;
     private bool _bridgeDoneLock;
+    
 
     private Vector3 _startCoord;
     private Vector3 _endCoord;
@@ -59,6 +64,13 @@ public class PointSpawner : MonoBehaviour
 	    _cameraController = GameObject.Find("CameraManager").GetComponent<CameraController>();
 	    //_input = FindObjectOfType<InputManager>();
 	}
+
+    void Update()
+    {
+        var pointingRay = PointerFinger.GetBoneDirection((int)PointerFinger.fingerType);
+        var fingerPoint = PointerFinger.GetBoneCenter((int) PointerFinger.fingerType);
+        Debug.DrawRay(fingerPoint, pointingRay);
+    }
 	
 	// Update is called once per frame
 	void FixedUpdate ()
