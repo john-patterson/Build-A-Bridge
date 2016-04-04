@@ -18,6 +18,7 @@ public class PointSpawner : MonoBehaviour
     public Transform EndPoint;
 
     public bool DebugEnabled = true;
+    public float JointStrength = 100.0f;
 
     private CameraController _cameraController;
     private bool _mouseLock;
@@ -170,7 +171,7 @@ public class PointSpawner : MonoBehaviour
         tempHinge.autoConfigureConnectedAnchor = true;
         tempHinge.enablePreprocessing = false;
         tempHinge.axis = new Vector3(1, 0, 0);
-        tempHinge.breakForce = 100;
+        tempHinge.breakForce = JointStrength;
         //tempHinge.useSpring = true;
 
         //tempHinge.anchor = new Vector3(0.0f, 0.5f, 0.0f);
