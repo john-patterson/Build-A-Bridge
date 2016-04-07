@@ -36,6 +36,7 @@ public class PointSpawner : MonoBehaviour
     private List<Transform> _planksList; 
     private List<HingeJoint> _hinges;
     private List<Transform> _points;
+    public Transform CylinderObj;
 
 	// Use this for initialization
 	void Start ()
@@ -67,9 +68,16 @@ public class PointSpawner : MonoBehaviour
 
     void Update()
     {
+        if (!CylinderObj.gameObject.activeSelf)
+            return;
+
         var pointingRay = PointerFinger.GetBoneDirection((int)PointerFinger.fingerType);
-        var fingerPoint = PointerFinger.GetBoneCenter((int) PointerFinger.fingerType);
-        Debug.DrawRay(fingerPoint, pointingRay);
+        var fingerPoint = PointerFinger.GetBoneCenter((int)PointerFinger.fingerType);
+
+        var point = fingerPoint + CylinderObj.localScale.y * pointingRay.normalized;
+        var rotation = Quaternion.LookRotation(pointingRay) * Quaternion.AngleAxis(90, new Vector3(1, 0, 0));
+        CylinderObj.rotation = rotation;
+        CylinderObj.position = point;
     }
 	
 	// Update is called once per frame
