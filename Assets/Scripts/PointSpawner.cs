@@ -19,7 +19,6 @@ public class PointSpawner : MonoBehaviour
     public Transform StartPoint;
     public Transform EndPoint;
 
-    public bool DebugEnabled = true;
     public float JointStrength = 100.0f;
 
     public RigidFinger PointerFinger;
@@ -38,12 +37,13 @@ public class PointSpawner : MonoBehaviour
     private List<Transform> _points;
     public Transform CylinderObj;
 
+    public bool Debug = false;
+
 	// Use this for initialization
 	void Start ()
 	{
 	    _mouseLock = false;
 	    _bridgeDoneLock = false;
-	    _bridgeDoneLock = !DebugEnabled;
 
 
 	    _wallMask = LayerMask.GetMask("ClickingPlane");
@@ -79,7 +79,18 @@ public class PointSpawner : MonoBehaviour
         CylinderObj.rotation = rotation;
         CylinderObj.position = point;
     }
-	
+
+
+    private bool GetBridgeFinished()
+    {
+        return Input.GetButton("Fire2");
+    }
+
+    private bool GetPlacePoint()
+    {
+        return Input.GetButton("Fire1");
+    }
+
 	// Update is called once per frame
 	void FixedUpdate ()
 	{
@@ -87,7 +98,7 @@ public class PointSpawner : MonoBehaviour
 
         if (_bridgeDoneLock) return;
 
-        if (Input.GetButton("Fire2"))
+        if (GetBridgeFinished())
         {
             _bridgeDoneLock = true;
 	        foreach (var p in _planksList)
@@ -99,7 +110,7 @@ public class PointSpawner : MonoBehaviour
 
         }
 
-	    if (Input.GetButton("Fire1"))
+	    if (GetPlacePoint())
 	    {
 	        if (_mouseLock) return;
 
