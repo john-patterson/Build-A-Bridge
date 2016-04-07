@@ -25,6 +25,7 @@ public class PointSpawner : MonoBehaviour
 
     private CameraController _cameraController;
     private bool _mouseLock;
+    private bool _leapLock;
     private bool _bridgeDoneLock;
     
 
@@ -37,12 +38,14 @@ public class PointSpawner : MonoBehaviour
     private List<Transform> _points;
     public Transform CylinderObj;
 
-    public bool Debug = false;
+    public bool LeapDebug = true;
+    public LeapOutput LeapGestureManager;
 
 	// Use this for initialization
 	void Start ()
 	{
 	    _mouseLock = false;
+	    _leapLock = false;
 	    _bridgeDoneLock = false;
 
 
@@ -63,6 +66,9 @@ public class PointSpawner : MonoBehaviour
         Physics.IgnoreLayerCollision(gameObject.layer, everythingMask);
 
 	    _cameraController = GameObject.Find("CameraManager").GetComponent<CameraController>();
+
+        if (LeapDebug)
+            CylinderObj.gameObject.SetActive(false);
 	    //_input = FindObjectOfType<InputManager>();
 	}
 
@@ -80,15 +86,22 @@ public class PointSpawner : MonoBehaviour
         CylinderObj.position = point;
     }
 
+    private Ray GetPointingRay()
+    {
+        var pointingRay = PointerFinger.GetBoneDirection((int)PointerFinger.fingerType);
+        var fingerPoint = PointerFinger.GetBoneCenter((int)PointerFinger.fingerType);
+        return new Ray(fingerPoint, pointingRay);
+    }
+
 
     private bool GetBridgeFinished()
     {
-        return Input.GetButton("Fire2");
+        return LeapDebug ? Input.GetButton("Fire2") : LeapGestureManager.BridgeGesture();
     }
 
     private bool GetPlacePoint()
     {
-        return Input.GetButton("Fire1");
+        return LeapDebug ? Input.GetButton("Fire1") : LeapGestureManager.PlacePointGesture();
     }
 
 	// Update is called once per frame
@@ -112,21 +125,26 @@ public class PointSpawner : MonoBehaviour
 
 	    if (GetPlacePoint())
 	    {
-	        if (_mouseLock) return;
+	        if (_mouseLock && LeapDebug) return;
+	        if (_leapLock && !LeapDebug) return;
 
 	        _mouseLock = true;
+	        _leapLock = true;
+
 	        SpawnPoint();
 	    }
 	    else
 	    {
 	        _mouseLock = false;
+	        _leapLock = false;
+
 	    }
 	}
 
 
     void SpawnPoint()
     {
-        var camRay = Camera.main.ScreenPointToRay(Input.mousePosition);
+        var camRay = LeapDebug ? Camera.main.ScreenPointToRay(Input.mousePosition) : GetPointingRay();
         RaycastHit planeHit;
 
         if (!Physics.Raycast(camRay, out planeHit, 100, _wallMask)) return;
@@ -191,6 +209,9 @@ public class PointSpawner : MonoBehaviour
         {
             point.gameObject.SetActive(false);
         }
+
+        if (!LeapDebug)
+            CylinderObj.gameObject.SetActive(false);
 
     }
 

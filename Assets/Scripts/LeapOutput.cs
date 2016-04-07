@@ -26,7 +26,6 @@ public class LeapOutput : MonoBehaviour
         var tips = new [] {IndexTip, MiddleTip, RingTip, PinkyTip};
         var averageDistanceToPalm = tips.Average(tip => (tip.position - Palm.position).magnitude);
         var triggered = averageDistanceToPalm <= FingersToPalmThreshold;
-        Debug.Log(string.Format("Avg Dist {0} Triggered {1}", averageDistanceToPalm, triggered));
         return triggered;
     }
 }
