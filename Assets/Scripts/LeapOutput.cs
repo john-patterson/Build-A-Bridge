@@ -2,6 +2,7 @@
 using UnityEngine;
 using System.Collections;
 using System.Linq;
+using Leap.Unity;
 
 public class LeapOutput : MonoBehaviour
 {
@@ -26,7 +27,9 @@ public class LeapOutput : MonoBehaviour
         var tips = new [] {IndexTip, MiddleTip, RingTip, PinkyTip};
         var averageDistanceToPalm = tips.Average(tip => (tip.position - Palm.position).magnitude);
         var triggered = averageDistanceToPalm <= FingersToPalmThreshold;
-        return triggered;
+        var palmUp = Vector3.Dot(Palm.up, Vector3.up) < -FingersToPalmThreshold;
+        
+        return triggered && palmUp;
     }
 }
 

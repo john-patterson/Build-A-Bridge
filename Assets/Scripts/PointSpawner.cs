@@ -27,6 +27,7 @@ public class PointSpawner : MonoBehaviour
     private bool _mouseLock;
     private bool _leapLock;
     private bool _bridgeDoneLock;
+    private bool _setupLock;
     
 
     private Vector3 _startCoord;
@@ -47,6 +48,7 @@ public class PointSpawner : MonoBehaviour
 	    _mouseLock = false;
 	    _leapLock = false;
 	    _bridgeDoneLock = false;
+	    _setupLock = true;
 
 
 	    _wallMask = LayerMask.GetMask("ClickingPlane");
@@ -74,6 +76,9 @@ public class PointSpawner : MonoBehaviour
 
     void Update()
     {
+        if (_setupLock)
+            _setupLock = GetSetupReady();
+
         if (!CylinderObj.gameObject.activeSelf)
             return;
 
@@ -84,6 +89,11 @@ public class PointSpawner : MonoBehaviour
         var rotation = Quaternion.LookRotation(pointingRay) * Quaternion.AngleAxis(90, new Vector3(1, 0, 0));
         CylinderObj.rotation = rotation;
         CylinderObj.position = point;
+    }
+
+    private bool GetSetupReady()
+    {
+        return !Input.GetKeyDown(KeyCode.Z);
     }
 
     private Ray GetPointingRay()
@@ -97,6 +107,7 @@ public class PointSpawner : MonoBehaviour
     private bool GetBridgeFinished()
     {
         return LeapDebug ? Input.GetButton("Fire2") : LeapGestureManager.BridgeGesture();
+        //return false;
     }
 
     private bool GetPlacePoint()
@@ -108,6 +119,7 @@ public class PointSpawner : MonoBehaviour
 	void FixedUpdate ()
 	{
 	    //_input.PlacePoint();
+	    if (_setupLock) return;
 
         if (_bridgeDoneLock) return;
 
