@@ -5,11 +5,19 @@
       <translate x="0" y="0" z="0" />
       <rotate r00="1" r01="0" r02="0" r10="0" r11="1" r12="0" r20="0" r21="0" r22="1" />
     </PS_Move-Kinect_1>
+    <Oculus_DK2-Kinect_2>
+      <translate x="0.04202443" y="-0.02561602" z="-0.2011417" />
+      <rotate r00="1.030555" r01="0.07669873" r02="-0.0397798" r10="-0.05868341" r11="0.7295591" r12="-0.473072" r20="-0.1043825" r21="0.4653161" r22="0.7671152" />
+    </Oculus_DK2-Kinect_2>
   </Transforms>
   <FloorData>
     <Kinect_1>
       <floorNormal x="0" y="1" z="0" />
       <distanceFromFloor value="0" />
     </Kinect_1>
+    <Kinect_2>
+      <floorNormal x="0.01002286" y="0.999876" z="0.01214513" />
+      <distanceFromFloor value="0.7230275" />
+    </Kinect_2>
   </FloorData>
 </ns2:RUISPairwiseCalibration>
