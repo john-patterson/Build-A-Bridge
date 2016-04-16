@@ -1,9 +1,22 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Annotations;
 using Leap;
 using Leap.Unity;
+
+
+public static class EnumerableExtensions
+{
+    public static void Each<T>(this IEnumerable<T> @this, Action<T, int> action)
+    {
+        var i = 0;
+        foreach (var v in @this)
+            action(v, i++);
+    }
+}
 
 public class PointSpawner : MonoBehaviour
 {
@@ -42,13 +55,77 @@ public class PointSpawner : MonoBehaviour
     public bool LeapDebug = true;
     public LeapOutput LeapGestureManager;
 
+    private float _width;
+    private float _height;
+    private const int GridN = 11;
+    
+    private Transform[] gridTransforms;
+    private Vector3[] verticies;
+
+    Vector3 CalculateGridAnchor()
+    {
+        _width = 10 * gameObject.transform.localScale.x;
+        _height = 10 * gameObject.transform.localScale.y;
+        return gameObject.transform.position - new Vector3(_width / 2f, _height / 2f, 0);
+    }
+
+    private Vector3 GetGridOrigin()
+    {
+        var pt = verticies[0];
+        return pt;
+    }
+
+    private int EncodeToIndex(Vector3 pos)
+    {
+        if (verticies == null)
+            throw new Exception("EncodeToIndex can only be used after a grid has been populated.");
+        var gridPos = pos - GetGridOrigin(); // Normalized to grid size
+        gridPos.x /= _width;
+        gridPos.y /= _height;
+        var x_offset = (_width/GridN)/2f;
+        var y_offset = (_height / GridN) / 2f;
+
+        var row = Math.Round( gridPos.y * GridN - y_offset);
+        var col = Math.Round( gridPos.x * GridN + x_offset);
+        return (int)Math.Floor((row*(GridN)) + col - 1);
+    }
+
+    private void GenerateGrid()
+    {
+        var anchor = CalculateGridAnchor();
+        verticies = new Vector3[(GridN + 1)*(GridN + 1)];
+        for (int  i = 0, y = 0; y < GridN; y++)
+            for (var x = 0; x < GridN; x++, i++)
+            {
+                verticies[i] = new Vector3(anchor.x + x, anchor.y + y, anchor.z);
+            }
+        PaintGrid();
+    }
+
+    private void PaintGrid()
+    {
+        gridTransforms = new Transform[verticies.Length];
+        verticies.Each((v, i) =>
+        {
+            var sphere = (Transform) Instantiate(Sphere, v, Quaternion.identity);
+            sphere.GetComponent<MeshRenderer>().material.color = Color.cyan;
+            gridTransforms[i] = sphere;
+        });
+    }
+
+    void InitializeLocks()
+    {
+        _mouseLock = false;
+        _leapLock = false;
+        _bridgeDoneLock = false;
+        _setupLock = true;
+    }
+
 	// Use this for initialization
 	void Start ()
 	{
-	    _mouseLock = false;
-	    _leapLock = false;
-	    _bridgeDoneLock = false;
-	    _setupLock = true;
+        InitializeLocks();
+        GenerateGrid();
 
 
 	    _wallMask = LayerMask.GetMask("ClickingPlane");
@@ -76,19 +153,35 @@ public class PointSpawner : MonoBehaviour
 
     void Update()
     {
-        if (_setupLock)
-            _setupLock = GetSetupReady();
+        if (!LeapDebug)
+        {
+            if (_setupLock)
+                _setupLock = GetSetupReady();
 
-        if (!CylinderObj.gameObject.activeSelf)
-            return;
+            if (!CylinderObj.gameObject.activeSelf)
+                return;
 
-        var pointingRay = PointerFinger.GetBoneDirection((int)PointerFinger.fingerType);
-        var fingerPoint = PointerFinger.GetBoneCenter((int)PointerFinger.fingerType);
+            var pointingRay = PointerFinger.GetBoneDirection((int) PointerFinger.fingerType);
+            var fingerPoint = PointerFinger.GetBoneCenter((int) PointerFinger.fingerType);
 
-        var point = fingerPoint + CylinderObj.localScale.y * pointingRay.normalized;
-        var rotation = Quaternion.LookRotation(pointingRay) * Quaternion.AngleAxis(90, new Vector3(1, 0, 0));
-        CylinderObj.rotation = rotation;
-        CylinderObj.position = point;
+            var point = fingerPoint + CylinderObj.localScale.y*pointingRay.normalized;
+            var rotation = Quaternion.LookRotation(pointingRay)*Quaternion.AngleAxis(90, new Vector3(1, 0, 0));
+            CylinderObj.rotation = rotation;
+            CylinderObj.position = point;
+        }
+        else
+        {
+            RaycastHit planeHit;
+            if (!GetPlaneIntersection(out planeHit))
+                return;
+            var index = EncodeToIndex(planeHit.point);
+            gridTransforms[index].GetComponent<MeshRenderer>().material.color = Color.yellow;
+            gridTransforms.Each((t, i) =>
+            {
+                if (i != index) t.GetComponent<MeshRenderer>().material.color = Color.cyan;
+            });
+
+        }
     }
 
     private bool GetSetupReady()
@@ -98,6 +191,9 @@ public class PointSpawner : MonoBehaviour
 
     private Ray GetPointingRay()
     {
+        if (LeapDebug)
+            return Camera.main.ScreenPointToRay(Input.mousePosition);
+
         var pointingRay = PointerFinger.GetBoneDirection((int)PointerFinger.fingerType);
         var fingerPoint = PointerFinger.GetBoneCenter((int)PointerFinger.fingerType);
         return new Ray(fingerPoint, pointingRay);
@@ -119,7 +215,7 @@ public class PointSpawner : MonoBehaviour
 	void FixedUpdate ()
 	{
 	    //_input.PlacePoint();
-	    if (_setupLock) return;
+	    if (_setupLock && !LeapDebug) return;
 
         if (_bridgeDoneLock) return;
 
@@ -153,13 +249,19 @@ public class PointSpawner : MonoBehaviour
 	    }
 	}
 
+    bool GetPlaneIntersection(out RaycastHit planeHit)
+    {
+        var ray = GetPointingRay();
+        var hit = Physics.Raycast(ray, out planeHit, 100, _wallMask);
+        return hit;
+    }
 
     void SpawnPoint()
     {
-        var camRay = LeapDebug ? Camera.main.ScreenPointToRay(Input.mousePosition) : GetPointingRay();
         RaycastHit planeHit;
+        if (!GetPlaneIntersection(out planeHit))
+            return;
 
-        if (!Physics.Raycast(camRay, out planeHit, 100, _wallMask)) return;
 
         _points.Add((Transform)Instantiate(Sphere, planeHit.point, Quaternion.identity));
         if (_plankPoints.Count > 0)

@@ -4,7 +4,7 @@ using System.Collections;
 public class CameraController : MonoBehaviour
 {
     public RUISCamera ObliqueCamera;
-    public RUISCamera PlayerCamera;
+    
     public ChosenCamera StartingCamera;
     public RUISDisplay MainDisplay;
     public GameObject Character;
@@ -46,15 +46,12 @@ public class CameraController : MonoBehaviour
         {
             case ChosenCamera.Oblique:
                 ObliqueCamera.gameObject.SetActive(true);
-                PlayerCamera.gameObject.SetActive(false);
                 MainDisplay.linkedCamera = ObliqueCamera;
                 CurrentCamera = ChosenCamera.Oblique;
                 DeactivateKinect();
                 break;
             case ChosenCamera.Player:
                 ObliqueCamera.gameObject.SetActive(false);
-                PlayerCamera.gameObject.SetActive(true);
-                MainDisplay.linkedCamera = PlayerCamera;
                 CurrentCamera = ChosenCamera.Player;
                 ActivateKinect();
                 break;
@@ -64,14 +61,19 @@ public class CameraController : MonoBehaviour
 
     private void ActivateKinect()
     {
-        Character.SetActive(true);
-        InputManager.enableKinect2 = true;
+        //Character.SetActive(true);
+        //InputManager.enableKinect2 = true;
+        var characterCamera = Character.GetComponentInChildren<RUISCamera>();
+//        characterCamera.gameObject.SetActive(true);
+        MainDisplay.linkedCamera = characterCamera;
     }
 
     private void DeactivateKinect()
     {
-        Character.SetActive(false);
-        InputManager.enableKinect2 = false;
+        //var characterCamera = Character.GetComponentInChildren<RUISCamera>();
+        //characterCamera.gameObject.SetActive(false);
+        //Character.SetActive(false);
+        //InputManager.enableKinect2 = false;
     }
 
 }
