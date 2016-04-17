@@ -23,6 +23,7 @@ public static class EnumerableExtensions
     }
 }
 
+
 public class PointSpawner : MonoBehaviour
 {
    // private InputManager _input;
@@ -57,6 +58,7 @@ public class PointSpawner : MonoBehaviour
     private List<HingeJoint> _hinges;
     private List<Transform> _points;
     public Transform CylinderObj;
+    public Transform SnappingObj;
 
     public bool LeapDebug = true;
     public LeapOutput LeapGestureManager;
@@ -203,7 +205,6 @@ public class PointSpawner : MonoBehaviour
 
 	    _startCoord = StartPoint.position;
 	    _endCoord = EndPoint.position;
-
 	    _startCoord.z = 0;
 	    _endCoord.z = 0;
 
@@ -212,10 +213,43 @@ public class PointSpawner : MonoBehaviour
 
 	    _cameraController = GameObject.Find("CameraManager").GetComponent<CameraController>();
 
-        if (LeapDebug)
-            CylinderObj.gameObject.SetActive(false);
-	    //_input = FindObjectOfType<InputManager>();
+	    if (LeapDebug) return;
+	    CylinderObj.gameObject.SetActive(true);
+	    SnappingObj.gameObject.SetActive(true);
 	}
+
+
+    void OrientPointingCylinder()
+    {
+        var pointingRay = PointerFinger.GetBoneDirection(PointerFingerType);
+        var fingerPoint = PointerFinger.GetBoneCenter(PointerFingerType);
+
+        var pointingObjPoint = fingerPoint + CylinderObj.localScale.y * pointingRay.normalized;
+        var pointingObjRotation = Quaternion.LookRotation(pointingRay) * Quaternion.AngleAxis(90, new Vector3(1, 0, 0));
+        CylinderObj.rotation = pointingObjRotation;
+        CylinderObj.position = pointingObjPoint;
+    }
+
+    void OrientSnappingCylinder()
+    {
+        RaycastHit hitPt;
+        if (!GetPlaneIntersection(out hitPt))
+        {
+            SnappingObj.gameObject.SetActive(false);
+            return;
+        };
+        SnappingObj.gameObject.SetActive(true);
+
+        var getSnappedVertex = _verticies[EncodeToIndex(hitPt.point)];
+        var fingerPoint = PointerFinger.GetBoneCenter(PointerFingerType);
+        var ray = getSnappedVertex - fingerPoint;
+
+        SnappingObj.position = fingerPoint + SnappingObj.localScale.y*ray.normalized;
+        SnappingObj.rotation = Quaternion.LookRotation(ray)*Quaternion.AngleAxis(90, new Vector3(1, 0, 0));
+        //SnappingObj.position = ray.origin + SnappingObj.localScale.y * ray.direction.normalized;
+        //SnappingObj.rotation = Quaternion.LookRotation(ray.direction) * Quaternion.AngleAxis(90, new Vector3(1, 0, 0));
+    }
+
 
     void Update()
     {
@@ -224,16 +258,20 @@ public class PointSpawner : MonoBehaviour
             if (_setupLock)
                 _setupLock = GetSetupReady();
 
-            if (!CylinderObj.gameObject.activeSelf)
-                return;
+            if (!CylinderObj.gameObject.activeSelf) return;
+            OrientPointingCylinder();
+            OrientSnappingCylinder();
 
-            var pointingRay = PointerFinger.GetBoneDirection((int) PointerFinger.fingerType);
-            var fingerPoint = PointerFinger.GetBoneCenter((int) PointerFinger.fingerType);
 
-            var point = fingerPoint + CylinderObj.localScale.y*pointingRay.normalized;
-            var rotation = Quaternion.LookRotation(pointingRay)*Quaternion.AngleAxis(90, new Vector3(1, 0, 0));
-            CylinderObj.rotation = rotation;
-            CylinderObj.position = point;
+
+            
+            //var snappingRay = GetRayToPoint(_verticies[EncodeToIndex(hitPt.point)]).direction;
+            //var snappingObjPoint = fingerPoint + SnappingObj.localScale.y*snappingRay.normalized;
+            //var snappingObjRotation = Quaternion.LookRotation(snappingRay)*
+            //                          Quaternion.AngleAxis(90, new Vector3(1, 0, 0));
+            //SnappingObj.rotation = snappingObjRotation;
+            //SnappingObj.position = snappingObjPoint;
+
         }
         else
         {
