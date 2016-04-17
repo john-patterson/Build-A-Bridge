@@ -7,7 +7,6 @@ using JetBrains.Annotations;
 using Leap;
 using Leap.Unity;
 
-
 public static class EnumerableExtensions
 {
     public static void Each<T>(this IEnumerable<T> @this, Action<T, int> action)
@@ -15,6 +14,12 @@ public static class EnumerableExtensions
         var i = 0;
         foreach (var v in @this)
             action(v, i++);
+    }
+
+    public static void Each<T>(this IEnumerable<T> @this, Action<T> action)
+    {
+        foreach (var v in @this)
+            action(v);
     }
 }
 
@@ -35,6 +40,7 @@ public class PointSpawner : MonoBehaviour
     public float JointStrength = 100.0f;
 
     public RigidFinger PointerFinger;
+    private int PointerFingerType { get { return (int) PointerFinger.fingerType; } }
 
     private CameraController _cameraController;
     private bool _mouseLock;
@@ -59,9 +65,11 @@ public class PointSpawner : MonoBehaviour
     private float _height;
     private const int GridN = 11;
     
-    private Transform[] gridTransforms;
-    private Vector3[] verticies;
+    private Transform[] _gridTransforms;
+    private Vector3[] _verticies;
 
+
+    #region Grid Calculation
     Vector3 CalculateGridAnchor()
     {
         _width = 10 * gameObject.transform.localScale.x;
@@ -71,14 +79,19 @@ public class PointSpawner : MonoBehaviour
 
     private Vector3 GetGridOrigin()
     {
-        var pt = verticies[0];
+        RequiresVerticies("GetGridOrigin");
+        var pt = _verticies[0];
         return pt;
     }
 
+    private void RequiresVerticies(string method)
+    {
+        if (_verticies == null)
+            throw new Exception(string.Format("{0} can only be used after a grid has been populated.", method));
+    }
     private int EncodeToIndex(Vector3 pos)
     {
-        if (verticies == null)
-            throw new Exception("EncodeToIndex can only be used after a grid has been populated.");
+        RequiresVerticies("EncodeToIndex");
         var gridPos = pos - GetGridOrigin(); // Normalized to grid size
         gridPos.x /= _width;
         gridPos.y /= _height;
@@ -93,25 +106,71 @@ public class PointSpawner : MonoBehaviour
     private void GenerateGrid()
     {
         var anchor = CalculateGridAnchor();
-        verticies = new Vector3[(GridN + 1)*(GridN + 1)];
+        _verticies = new Vector3[(GridN + 1)*(GridN + 1)];
         for (int  i = 0, y = 0; y < GridN; y++)
             for (var x = 0; x < GridN; x++, i++)
             {
-                verticies[i] = new Vector3(anchor.x + x, anchor.y + y, anchor.z);
+                _verticies[i] = new Vector3(anchor.x + x, anchor.y + y, anchor.z);
             }
         PaintGrid();
     }
 
     private void PaintGrid()
     {
-        gridTransforms = new Transform[verticies.Length];
-        verticies.Each((v, i) =>
+        _gridTransforms = new Transform[_verticies.Length];
+        _verticies.Each((v, i) =>
         {
             var sphere = (Transform) Instantiate(Sphere, v, Quaternion.identity);
             sphere.GetComponent<MeshRenderer>().material.color = Color.cyan;
-            gridTransforms[i] = sphere;
+            _gridTransforms[i] = sphere;
         });
     }
+    #endregion
+
+    #region Ray Resources
+    private Ray GetPointingRay()
+    {
+        return
+            GetRayToPoint(LeapDebug
+                ? Input.mousePosition
+                : PointerFinger.GetBoneDirection(PointerFingerType));
+    }
+
+    private Ray GetRayToPoint(Vector3 pt)
+    {
+        if (LeapDebug)
+            return Camera.main.ScreenPointToRay(pt);
+
+        var fingerLocation = PointerFinger.GetBoneCenter(PointerFingerType);
+        return new Ray(fingerLocation, pt);
+    }
+
+    bool GetPlaneIntersection(out RaycastHit planeHit)
+    {
+        var ray = GetPointingRay();
+        var hit = Physics.Raycast(ray, out planeHit, 100, _wallMask);
+        return hit;
+    }
+    #endregion
+
+    #region Input Resources
+    private bool GetSetupReady()
+    {
+        return !Input.GetKeyDown(KeyCode.Z);
+    }
+
+    private bool GetBridgeFinished()
+    {
+        return LeapDebug ? Input.GetButton("Fire2") : LeapGestureManager.BridgeGesture();
+        //return false;
+    }
+
+    private bool GetPlacePoint()
+    {
+        return LeapDebug ? Input.GetButton("Fire1") : LeapGestureManager.PlacePointGesture();
+    }
+    #endregion
+
 
     void InitializeLocks()
     {
@@ -119,6 +178,13 @@ public class PointSpawner : MonoBehaviour
         _leapLock = false;
         _bridgeDoneLock = false;
         _setupLock = true;
+    }
+
+    bool CheckLocks(params bool[] list)
+    {
+        var value = false;
+        list.Each(l => value = value || l);
+        return value;
     }
 
 	// Use this for initialization
@@ -175,8 +241,8 @@ public class PointSpawner : MonoBehaviour
             if (!GetPlaneIntersection(out planeHit))
                 return;
             var index = EncodeToIndex(planeHit.point);
-            gridTransforms[index].GetComponent<MeshRenderer>().material.color = Color.yellow;
-            gridTransforms.Each((t, i) =>
+            _gridTransforms[index].GetComponent<MeshRenderer>().material.color = Color.yellow;
+            _gridTransforms.Each((t, i) =>
             {
                 if (i != index) t.GetComponent<MeshRenderer>().material.color = Color.cyan;
             });
@@ -184,48 +250,18 @@ public class PointSpawner : MonoBehaviour
         }
     }
 
-    private bool GetSetupReady()
-    {
-        return !Input.GetKeyDown(KeyCode.Z);
-    }
 
-    private Ray GetPointingRay()
-    {
-        if (LeapDebug)
-            return Camera.main.ScreenPointToRay(Input.mousePosition);
-
-        var pointingRay = PointerFinger.GetBoneDirection((int)PointerFinger.fingerType);
-        var fingerPoint = PointerFinger.GetBoneCenter((int)PointerFinger.fingerType);
-        return new Ray(fingerPoint, pointingRay);
-    }
-
-
-    private bool GetBridgeFinished()
-    {
-        return LeapDebug ? Input.GetButton("Fire2") : LeapGestureManager.BridgeGesture();
-        //return false;
-    }
-
-    private bool GetPlacePoint()
-    {
-        return LeapDebug ? Input.GetButton("Fire1") : LeapGestureManager.PlacePointGesture();
-    }
 
 	// Update is called once per frame
 	void FixedUpdate ()
 	{
-	    //_input.PlacePoint();
-	    if (_setupLock && !LeapDebug) return;
+	    if (CheckLocks(_setupLock && !LeapDebug, _bridgeDoneLock)) return;     
 
-        if (_bridgeDoneLock) return;
 
         if (GetBridgeFinished())
         {
             _bridgeDoneLock = true;
-	        foreach (var p in _planksList)
-	        {
-	            UnfreezePlank(p); 
-	        }
+            _planksList.Each(UnfreezePlank);
             FinishBridge();
             _cameraController.SetActiveCamera(CameraController.ChosenCamera.Player);
 
@@ -233,8 +269,7 @@ public class PointSpawner : MonoBehaviour
 
 	    if (GetPlacePoint())
 	    {
-	        if (_mouseLock && LeapDebug) return;
-	        if (_leapLock && !LeapDebug) return;
+	        if (CheckLocks(_mouseLock && LeapDebug, _leapLock && !LeapDebug)) return;
 
 	        _mouseLock = true;
 	        _leapLock = true;
@@ -249,12 +284,7 @@ public class PointSpawner : MonoBehaviour
 	    }
 	}
 
-    bool GetPlaneIntersection(out RaycastHit planeHit)
-    {
-        var ray = GetPointingRay();
-        var hit = Physics.Raycast(ray, out planeHit, 100, _wallMask);
-        return hit;
-    }
+
 
     void SpawnPoint()
     {
@@ -264,11 +294,11 @@ public class PointSpawner : MonoBehaviour
 
 
         _points.Add((Transform)Instantiate(Sphere, planeHit.point, Quaternion.identity));
-        if (_plankPoints.Count > 0)
+        if (_plankPoints.Any())
         {
             var plank = DrawPlank(_plankPoints.Last(), planeHit.point);
 
-            if (_planks.Count > 0)
+            if (_planks.Any())
             {
                 var hinge = MakeHinge(plank, _planks.Last());
                 _hinges.Add(hinge);
@@ -319,10 +349,7 @@ public class PointSpawner : MonoBehaviour
         _hinges.Insert(0, startHinge);
         _hinges.Add(endHinge);
 
-        foreach (var point in _points)
-        {
-            point.gameObject.SetActive(false);
-        }
+        _points.Each(p => p.gameObject.SetActive(false));
 
         if (!LeapDebug)
             CylinderObj.gameObject.SetActive(false);
@@ -338,11 +365,6 @@ public class PointSpawner : MonoBehaviour
         tempHinge.enablePreprocessing = false;
         tempHinge.axis = new Vector3(1, 0, 0);
         tempHinge.breakForce = JointStrength;
-        //tempHinge.useSpring = true;
-
-        //tempHinge.anchor = new Vector3(0.0f, 0.5f, 0.0f);
-        //tempHinge.connectedAnchor = new Vector3(plank2.transform.localScale.x / -2.0f, 0.5f, 0.0f);
-
 
         return tempHinge;
     }
