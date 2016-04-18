@@ -381,7 +381,7 @@ public class RUISSkeletonController : MonoBehaviour
 							Debug.LogWarning(	"Using PS Move controller #" + characterController.moveControllerId + " as a source "
 						                 	 +	"for avatar root position of " + gameObject.name + ", because PS Move is enabled"
 											 +	"and the PS Move controller has been assigned as a "
-											 +	"Character Pivot in " + gameObject.name + "'s parent GameObject");
+											 +	"CharacterCamera Pivot in " + gameObject.name + "'s parent GameObject");
 					}
 
 					if(!inputManager.enableKinect && !inputManager.enableKinect2 && !followMoveController)
@@ -390,7 +390,7 @@ public class RUISSkeletonController : MonoBehaviour
 						if(OVRManager.display != null && OVRManager.display.isPresent)
 						{
 							followOculusController = true;
-							Debug.LogWarning(	"Using Oculus Rift HMD as a Character Pivot for " + gameObject.name
+							Debug.LogWarning(	"Using Oculus Rift HMD as a CharacterCamera Pivot for " + gameObject.name
 							                 +	", because Kinects are disabled and an Oculus Rift was detected.");
 						}
 					}

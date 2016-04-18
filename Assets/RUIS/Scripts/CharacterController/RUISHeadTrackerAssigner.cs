@@ -33,7 +33,7 @@ public class RUISHeadTrackerAssigner : MonoBehaviour {
 	private bool applyKinectDriftCorrectionPreference = false;
 	[Tooltip(  "If a RUISCharacterController script is found from this gameobject, and both Kinects are disabled "
 	         + "and PS Move is enabled in RUISInputManager, and the chosen RUISTracker is a PS Move controller, "
-	         + "then force the Character Pivot to that PS Move.")]
+	         + "then force the CharacterCamera Pivot to that PS Move.")]
 	public bool changePivotIfNoKinect = true;
 	[Tooltip(  "If the chosen RUISTracker is Razer Hydra, this offset will be applied to its parent, "
 	         + "and to the below 'Razer Wand Parent' gameobject. You can ue this to offset the Razer "
@@ -251,7 +251,7 @@ public class RUISHeadTrackerAssigner : MonoBehaviour {
 						characterController.characterPivotType = RUISCharacterController.CharacterPivotType.MoveController;
 						characterController.moveControllerId = closestMatch.positionPSMoveID;
 						Debug.Log(	  "PS Move enabled and Kinect disabled. Setting " + characterController.name 
-									+ "'s Character Pivot as PS Move controller #" + closestMatch.positionPSMoveID
+									+ "'s CharacterCamera Pivot as PS Move controller #" + closestMatch.positionPSMoveID
 									+ ". PS Move position offset for this pivot is " + characterController.psmoveOffset);
 					}
 				}

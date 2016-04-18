@@ -53,7 +53,7 @@ public class RUISCharacterControllerEditor : Editor
     {
         serializedObject.Update();
 
-		EditorGUILayout.PropertyField(characterPivotType, new GUIContent(  "Character Pivot Type", "Rotation pivot for the character, in other words, "
+		EditorGUILayout.PropertyField(characterPivotType, new GUIContent(  "CharacterCamera Pivot Type", "Rotation pivot for the character, in other words, "
 		                                                                 + "what is the rotation center for the character when turning with the "
 		                                                                 + typeof(RUISCharacterLocomotion).Name + " script. Pivot orientation also defines "
 		                                                                 + "the Forward movement direction. Currently 'Kinect Head' is NOT recommended."));
@@ -106,12 +106,12 @@ public class RUISCharacterControllerEditor : Editor
 
 		EditorGUILayout.PropertyField(headRotatesBody, new GUIContent(  "Head Rotates Body", "Set the model of the avatar to have the same rotation as the tracked head. "
 		                                                              + "This only has effect when both Kinects are disabled from " + typeof(RUISInputManager) + " or "
-		                                                              + "PS Move is set as the Character Pivot."));
+		                                                              + "PS Move is set as the CharacterCamera Pivot."));
 
 		EditorGUILayout.PropertyField(headPointsWalkingDirection, new GUIContent(  "Head Points Walking Direction", "Let the tracked head forward direction to determine "
 		                                                                         + "the walk forward direction for character locomotion controls. This only has effect "
 		                                                                         + "when both Kinects are disabled from " + typeof(RUISInputManager) + " or "
-		                                                                         + "PS Move is set as the Character Pivot."));
+		                                                                         + "PS Move is set as the CharacterCamera Pivot."));
 
         EditorGUI.indentLevel -= 2;
 

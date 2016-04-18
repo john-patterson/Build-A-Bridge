@@ -16,8 +16,8 @@
       <distanceFromFloor value="0" />
     </Kinect_1>
     <Kinect_2>
-      <floorNormal x="0.01265828" y="0.9999112" z="0.004167014" />
-      <distanceFromFloor value="0.7381228" />
+      <floorNormal x="0.0004119059" y="0.9964309" z="0.08441138" />
+      <distanceFromFloor value="0.7267219" />
     </Kinect_2>
   </FloorData>
 </ns2:RUISPairwiseCalibration>

@@ -7,8 +7,10 @@ public class CameraController : MonoBehaviour
     
     public ChosenCamera StartingCamera;
     public RUISDisplay MainDisplay;
+    public RUISCamera CharacterCamera;
     public GameObject Character;
     public RUISInputManager InputManager;
+    public PlayerSizer Sizer;
 
     private bool _testKeyLock = false;
 
@@ -38,8 +40,16 @@ public class CameraController : MonoBehaviour
         {
             _testKeyLock = false;
         }
+
+        if (playerSized && !playerMoved)
+        {
+            Sizer.MovePlayer();
+            playerMoved = true;
+        }
+
     }
 
+    private bool playerMoved = false;
     public void SetActiveCamera(ChosenCamera newActiveCamera)
     {
         switch (newActiveCamera)
@@ -56,23 +66,30 @@ public class CameraController : MonoBehaviour
                 ActivateKinect();
                 break;
         }
-        //FindObjectOfType<RUISDisplayManager>().UpdateDisplays();
+        FindObjectOfType<RUISDisplayManager>().UpdateDisplays();
     }
 
+    private bool playerSized = false;
     private void ActivateKinect()
     {
-        //Character.SetActive(true);
+        //CharacterCamera.SetActive(true);
         //InputManager.enableKinect2 = true;
-        var characterCamera = Character.GetComponentInChildren<RUISCamera>();
+        //var characterCamera = CharacterCamera.GetComponentInChildren<RUISCamera>();
 //        characterCamera.gameObject.SetActive(true);
-        MainDisplay.linkedCamera = characterCamera;
+        CharacterCamera.gameObject.SetActive(true);
+        MainDisplay.linkedCamera = CharacterCamera;
+        Sizer.SizePlayer();
+        playerSized = true;
+        Character.gameObject.GetComponent<Rigidbody>().useGravity = true;
     }
 
     private void DeactivateKinect()
     {
-        //var characterCamera = Character.GetComponentInChildren<RUISCamera>();
+        Character.gameObject.GetComponent<Rigidbody>().useGravity = false;
+
+        //var characterCamera = CharacterCamera.GetComponentInChildren<RUISCamera>();
         //characterCamera.gameObject.SetActive(false);
-        //Character.SetActive(false);
+        //CharacterCamera.SetActive(false);
         //InputManager.enableKinect2 = false;
     }
 

@@ -392,6 +392,7 @@ public class PointSpawner : MonoBehaviour
         _hinges.Add(endHinge);
 
         _points.Each(p => p.gameObject.SetActive(false));
+        _gridTransforms.Each(t => t.gameObject.SetActive(false));
 
         if (!LeapDebug)
             CylinderObj.gameObject.SetActive(false);
