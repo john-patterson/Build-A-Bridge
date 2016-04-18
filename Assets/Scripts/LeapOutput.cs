@@ -13,13 +13,14 @@ public class LeapOutput : MonoBehaviour
     public Transform RingTip;
     public Transform PinkyTip;
     public Transform Palm;
-    public float ThumbIndexKnuckleThreshold = 0.03f;
+    public float ThumbIndexKnuckleThreshold = 0.04f;
     public float FingersToPalmThreshold = 0.05f;
     
     public bool PlacePointGesture()
     {
         var distance = ThumbTip.position - IndexKnuckle.position;
-        return distance.magnitude <= ThumbIndexKnuckleThreshold;
+        var palmUp = Vector3.Dot(Palm.up, Vector3.up) >= -FingersToPalmThreshold;
+        return distance.magnitude <= ThumbIndexKnuckleThreshold && palmUp;
     }
 
     public bool BridgeGesture()

@@ -1,10 +1,7 @@
 ﻿using System;
 using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using JetBrains.Annotations;
-using Leap;
 using Leap.Unity;
 
 public static class EnumerableExtensions
@@ -33,36 +30,7 @@ public static class TransformExtensions
         @this.rotation = Quaternion.LookRotation(ray)*OrientingRotation;
     }
 }
-//void OrientPointingCylinder()
-//{
-//    var pointingRay = PointerFinger.GetBoneDirection(PointerFingerType);
-//    var fingerPoint = PointerFinger.GetBoneCenter(PointerFingerType);
 
-//    var pointingObjPoint = fingerPoint + CylinderObj.localScale.y * pointingRay.normalized;
-//    var pointingObjRotation = Quaternion.LookRotation(pointingRay) * Quaternion.AngleAxis(90, new Vector3(1, 0, 0));
-//    CylinderObj.rotation = pointingObjRotation;
-//    CylinderObj.position = pointingObjPoint;
-//}
-
-//void OrientSnappingCylinder()
-//{
-//    RaycastHit hitPt;
-//    if (!GetPlaneIntersection(out hitPt))
-//    {
-//        SnappingObj.gameObject.SetActive(false);
-//        return;
-//    };
-//    SnappingObj.gameObject.SetActive(true);
-
-//    var getSnappedVertex = _verticies[EncodeToIndex(hitPt.point)];
-//    var fingerPoint = PointerFinger.GetBoneCenter(PointerFingerType);
-//    var ray = getSnappedVertex - fingerPoint;
-
-//    SnappingObj.position = fingerPoint + SnappingObj.localScale.y * ray.normalized;
-//    SnappingObj.rotation = Quaternion.LookRotation(ray) * Quaternion.AngleAxis(90, new Vector3(1, 0, 0));
-//    //SnappingObj.position = ray.origin + SnappingObj.localScale.y * ray.direction.normalized;
-//    //SnappingObj.rotation = Quaternion.LookRotation(ray.direction) * Quaternion.AngleAxis(90, new Vector3(1, 0, 0));
-//}
 
 public class PointSpawner : MonoBehaviour
 {
@@ -105,7 +73,7 @@ public class PointSpawner : MonoBehaviour
 
     private float _width;
     private float _height;
-    private const int GridN = 11;
+    private const int GridN = 7;
     
     private Transform[] _gridTransforms;
     private Vector3[] _verticies;
@@ -149,11 +117,20 @@ public class PointSpawner : MonoBehaviour
     {
         var anchor = CalculateGridAnchor();
         _verticies = new Vector3[(GridN + 1)*(GridN + 1)];
-        for (int  i = 0, y = 0; y < GridN; y++)
+        var delta_x = _width/GridN;
+        var delta_y = _height/GridN;
+        for (int i = 0, y = 0; y < GridN; y++)
+        {
             for (var x = 0; x < GridN; x++, i++)
             {
-                _verticies[i] = new Vector3(anchor.x + x, anchor.y + y, anchor.z);
+                _verticies[i] = new Vector3(anchor.x + x*delta_x, anchor.y + y*delta_y, anchor.z);
             }
+        }
+        //for (int  i = 0, y = 0; y < GridN; y++)
+        //    for (var x = 0; x < GridN; x++, i++)
+        //    {
+        //        _verticies[i] = new Vector3(anchor.x + x, anchor.y + y, anchor.z);
+        //    }
         PaintGrid();
     }
 
@@ -213,7 +190,7 @@ public class PointSpawner : MonoBehaviour
     }
     #endregion
 
-
+    #region Setup
     void InitializeLocks()
     {
         _mouseLock = false;
@@ -257,8 +234,9 @@ public class PointSpawner : MonoBehaviour
 	    CylinderObj.gameObject.SetActive(true);
 	    SnappingObj.gameObject.SetActive(true);
 	}
+    #endregion
 
-
+    #region Game Loop
     void OrientPointingCylinder(Vector3 origin)
     {
         var pointingRay = PointerFinger.GetBoneDirection(PointerFingerType);
@@ -310,8 +288,6 @@ public class PointSpawner : MonoBehaviour
         }
     }
 
-
-
 	// Update is called once per frame
 	void FixedUpdate ()
 	{
@@ -343,7 +319,7 @@ public class PointSpawner : MonoBehaviour
 
 	    }
 	}
-
+    #endregion Game Loop
 
 
     void SpawnPoint()
@@ -351,12 +327,13 @@ public class PointSpawner : MonoBehaviour
         RaycastHit planeHit;
         if (!GetPlaneIntersection(out planeHit))
             return;
+        var vertex = _verticies[EncodeToIndex(planeHit.point)];
 
 
-        _points.Add((Transform)Instantiate(Sphere, planeHit.point, Quaternion.identity));
+        _points.Add((Transform)Instantiate(Sphere, vertex, Quaternion.identity));
         if (_plankPoints.Any())
         {
-            var plank = DrawPlank(_plankPoints.Last(), planeHit.point);
+            var plank = DrawPlank(_plankPoints.Last(), vertex);
 
             if (_planks.Any())
             {
@@ -368,7 +345,7 @@ public class PointSpawner : MonoBehaviour
             _planksList.Add(plank);
         }
 
-        _plankPoints.Add(planeHit.point);
+        _plankPoints.Add(vertex);
     }
 
     Transform DrawPlank(Vector3 p1, Vector3 p2)
@@ -387,6 +364,11 @@ public class PointSpawner : MonoBehaviour
         
         FreezePlank(obj);
         return obj;
+    }
+
+    public float GetBridgeLength()
+    {
+        return _planks.Sum(p => p.localScale.x) * (20f/19f);
     }
 
     void FinishBridge()
