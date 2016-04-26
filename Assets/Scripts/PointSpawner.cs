@@ -49,6 +49,7 @@ public class PointSpawner : MonoBehaviour
     public float JointStrength = 100.0f;
 
     public RigidFinger PointerFinger;
+    public GameObject[] FeetEntities;
     private int PointerFingerType { get { return (int) PointerFinger.fingerType; } }
 
     private CameraController _cameraController;
@@ -360,7 +361,6 @@ public class PointSpawner : MonoBehaviour
 
         obj.position = (p1 + (directionalVector / 2.0f));
         obj.rotation = Quaternion.AngleAxis(Mathf.Atan((p2.y-p1.y)/(p2.x - p1.x)) * Mathf.Rad2Deg, Vector3.forward);
-
         
         FreezePlank(obj);
         return obj;

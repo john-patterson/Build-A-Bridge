@@ -9,11 +9,12 @@ Licensing  :   RUIS is distributed under the LGPL Version 3 license.
 
 using UnityEngine;
 using System.Collections;
+using System.Linq;
 
 public class PlayAudioOnCollision : MonoBehaviour 
 {
 	
-	public GameObject triggerGameObject;
+	public GameObject[] triggerGameObjects;
 	
 	new AudioSource audio;
 	public enum AudioRepeating
@@ -35,7 +36,7 @@ public class PlayAudioOnCollision : MonoBehaviour
 	void OnTriggerEnter(Collider other)
 	{
 	
-		if (other.gameObject == triggerGameObject)
+		if (triggerGameObjects.Contains(other.gameObject))
 		{
 			if(!audio.isPlaying && !playedOnce)
 		    	audio.Play();
@@ -44,7 +45,7 @@ public class PlayAudioOnCollision : MonoBehaviour
 	
 	void OnTriggerExit(Collider other)
 	{
-		if(other.gameObject == triggerGameObject)
+		if(triggerGameObjects.Contains(other.gameObject))
 		{
 			if (cutOffUponExit)
 			    audio.Stop();
@@ -58,7 +59,7 @@ public class PlayAudioOnCollision : MonoBehaviour
 	
     void OnTriggerStay(Collider other) 
 	{
-		if(other.gameObject == triggerGameObject)
+		if(triggerGameObjects.Contains(other.gameObject))
 		{
 			if(repeatMode == AudioRepeating.RepeatWhileInside && !audio.isPlaying)
 		    	audio.Play();
