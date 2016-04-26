@@ -33,8 +33,7 @@ public class GameController : MonoBehaviour
     {
         if (other.tag == VictoryTag)
             GameWin();
-
-        if (other.tag == DeathTag)
+        else if (other.tag == DeathTag)
             GameLost();
     }
 
