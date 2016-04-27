@@ -18,6 +18,11 @@ public static class EnumerableExtensions
         foreach (var v in @this)
             action(v);
     }
+
+    public static void SetActive(this IEnumerable<Transform> @this, bool active)
+    {
+        @this.Each(t => t.gameObject.SetActive(active));
+    }
 }
 
 public static class TransformExtensions
@@ -391,8 +396,8 @@ public class PointSpawner : MonoBehaviour
         _hinges.Insert(0, startHinge);
         _hinges.Add(endHinge);
 
-        _points.Each(p => p.gameObject.SetActive(false));
-        _gridTransforms.Each(t => t.gameObject.SetActive(false));
+        _points.SetActive(false);
+        _gridTransforms.SetActive(false);
 
         if (!LeapDebug)
             CylinderObj.gameObject.SetActive(false);
