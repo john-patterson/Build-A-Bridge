@@ -159,7 +159,7 @@ public class PointSpawner : MonoBehaviour
     private Ray GetRayToPoint(Vector3 pt)
     {
         if (LeapDebug)
-            return Camera.main.ScreenPointToRay(pt);
+            return _cameraController.ObliqueCamera.leftCamera.ScreenPointToRay(pt);//Camera.main.ScreenPointToRay(pt);
 
         var fingerLocation = PointerFinger.GetBoneCenter(PointerFingerType);
         return new Ray(fingerLocation, pt);
