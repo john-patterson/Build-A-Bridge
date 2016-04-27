@@ -61,18 +61,18 @@ namespace Leap.Unity{
         return;
       }
   
-      Camera camera = component.GetComponent<Camera>();
-      if (camera == null) {
-        camera = component.gameObject.AddComponent<Camera>();
-      }
+      //Camera camera = component.GetComponent<Camera>();
+      //if (camera == null) {
+      //  camera = component.gameObject.AddComponent<Camera>();
+      //}
   
-      SerializedObject obj = new SerializedObject(camera);
-      SerializedProperty targetEyeProp = obj.FindProperty(TARGET_EYE_PROPERTY_NAME);
-      OrderType newOrder = (OrderType)targetEyeProp.intValue;
-      if (_orderType != newOrder) {
-        _orderType = newOrder;
-        EditorUtility.SetDirty(component);
-      }
+      //SerializedObject obj = new SerializedObject(camera);
+      //SerializedProperty targetEyeProp = obj.FindProperty(TARGET_EYE_PROPERTY_NAME);
+      //OrderType newOrder = (OrderType)targetEyeProp.intValue;
+      //if (_orderType != newOrder) {
+      //  _orderType = newOrder;
+      //  EditorUtility.SetDirty(component);
+      //}
     }
   #endif
   
