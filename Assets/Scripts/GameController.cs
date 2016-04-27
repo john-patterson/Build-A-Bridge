@@ -7,20 +7,14 @@ public class GameController : MonoBehaviour
     const string VictoryTag = "VictoryZone";
     const string DeathTag = "DeathZone";
 
-    public Transform BlankCube;
+    public GameObject GameOverUI;
     public AudioSource Ambient;
-    public AudioSource[] Feet;
+    public GameObject[] Feet;
 
 
     bool RestartInput()
     {
         return Input.GetKeyDown(KeyCode.Space);
-    }
-
-    void Start()
-    {
-        var mesh = BlankCube.GetComponent<MeshFilter>().mesh;
-        mesh.triangles = mesh.triangles.Reverse().ToArray();
     }
 
     void Update()
@@ -40,22 +34,25 @@ public class GameController : MonoBehaviour
     private void GameWin()
     {
         BlockOutsideStimuli();
+        GameOverUI.SetActive(true);
     }
 
     private void GameLost()
     {
         BlockOutsideStimuli();
+        GameOverUI.SetActive(true);
     }
 
     private void BlockOutsideStimuli()
     {
         Ambient.Stop();
         Ambient.mute = true;
-        Feet.Each(f =>
+        Feet.SelectMany(f => f.GetComponents<AudioSource>()).Each(a =>
         {
-            f.Stop();
-            f.mute = true;
+            a.Stop();
+            a.mute = true;
         });
+        GetComponents<RUISCamera>().Each(rc => rc.gameObject.SetActive(false));
     }
 
     private void GameRestart()
