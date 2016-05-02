@@ -54,7 +54,6 @@ public class PointSpawner : MonoBehaviour
     public float JointStrength = 100.0f;
 
     public RigidFinger PointerFinger;
-    public GameObject[] FeetEntities;
     private int PointerFingerType { get { return (int) PointerFinger.fingerType; } }
 
     private CameraController _cameraController;
@@ -117,6 +116,15 @@ public class PointSpawner : MonoBehaviour
         var row = Math.Round( gridPos.y * GridN - y_offset);
         var col = Math.Round( gridPos.x * GridN + x_offset);
         return (int)Math.Floor((row*(GridN)) + col - 1);
+    }
+
+    private double MaximumSpaceBetwenGridPoints
+    {
+        get {
+            var delta_x = _width/GridN;
+            var delta_y = _height/GridN;
+            return Math.Sqrt(delta_x*delta_x + delta_y*delta_y);
+        }
     }
 
     private void GenerateGrid()
@@ -327,6 +335,10 @@ public class PointSpawner : MonoBehaviour
 	}
     #endregion Game Loop
 
+    void InvalidPlankLength()
+    {
+        
+    }
 
     void SpawnPoint()
     {
@@ -334,6 +346,13 @@ public class PointSpawner : MonoBehaviour
         if (!GetPlaneIntersection(out planeHit))
             return;
         var vertex = _verticies[EncodeToIndex(planeHit.point)];
+
+        var previousPoint = _plankPoints.Any() ? _plankPoints.Last() : StartPoint.position;
+        if ((vertex - previousPoint).magnitude > MaximumSpaceBetwenGridPoints)
+        {
+            InvalidPlankLength();
+            return;
+        }
 
 
         _points.Add((Transform)Instantiate(Sphere, vertex, Quaternion.identity));
@@ -401,6 +420,7 @@ public class PointSpawner : MonoBehaviour
 
         if (!LeapDebug)
             CylinderObj.gameObject.SetActive(false);
+        
 
     }
 
