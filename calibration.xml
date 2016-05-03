@@ -6,8 +6,8 @@
       <rotate r00="1" r01="0" r02="0" r10="0" r11="1" r12="0" r20="0" r21="0" r22="1" />
     </PS_Move-Kinect_1>
     <Oculus_DK2-Kinect_2>
-      <translate x="-0.2394454" y="0.3104931" z="-0.3998589" />
-      <rotate r00="0.964061" r01="0.001123024" r02="-0.07725269" r10="0.02046125" r11="0.8631477" r12="-0.2118317" r20="0.05840015" r21="0.2038907" r22="0.6112207" />
+      <translate x="0.3366629" y="0.5067448" z="0.1326278" />
+      <rotate r00="0.8433191" r01="-0.138635" r02="0.1269748" r10="0.0009401485" r11="0.8505602" r12="-0.01016817" r20="-0.1464211" r21="0.04154351" r22="0.9084107" />
     </Oculus_DK2-Kinect_2>
   </Transforms>
   <FloorData>
@@ -16,8 +16,8 @@
       <distanceFromFloor value="0" />
     </Kinect_1>
     <Kinect_2>
-      <floorNormal x="-0.008664618" y="0.9998987" z="-0.01129125" />
-      <distanceFromFloor value="0.8802749" />
+      <floorNormal x="0.006486689" y="0.999742" z="-0.02176831" />
+      <distanceFromFloor value="0.9133205" />
     </Kinect_2>
   </FloorData>
 </ns2:RUISPairwiseCalibration>

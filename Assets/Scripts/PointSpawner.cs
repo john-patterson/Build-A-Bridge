@@ -55,13 +55,15 @@ public class PointSpawner : MonoBehaviour
 
     public RigidFinger PointerFinger;
     private int PointerFingerType { get { return (int) PointerFinger.fingerType; } }
+    
+
+
 
     private CameraController _cameraController;
     private bool _mouseLock;
     private bool _leapLock;
     private bool _bridgeDoneLock;
     private bool _setupLock;
-    
 
     private Vector3 _startCoord;
     private Vector3 _endCoord;
@@ -180,8 +182,12 @@ public class PointSpawner : MonoBehaviour
 
     bool GetPlaneIntersection(out RaycastHit planeHit)
     {
-        var ray = GetPointingRay();
-        var hit = Physics.Raycast(ray, out planeHit, 100, _wallMask);
+        return GetPlaneIntersection(GetPointingRay(), out planeHit);
+    }
+
+    bool GetPlaneIntersection(Ray pointingRay, out RaycastHit planeHit)
+    {
+        var hit = Physics.Raycast(pointingRay, out planeHit, 100, _wallMask);
         return hit;
     }
     #endregion
@@ -200,7 +206,7 @@ public class PointSpawner : MonoBehaviour
 
     private bool GetPlacePoint()
     {
-        return LeapDebug ? Input.GetButton("Fire1") : LeapGestureManager.PlacePointGesture();
+        return LeapDebug ? Input.GetButton("Fire1") : LeapGestureManager.LockGesture();
     }
     #endregion
 
@@ -285,6 +291,9 @@ public class PointSpawner : MonoBehaviour
             var fingerPoint = PointerFinger.GetBoneCenter(PointerFingerType);
             OrientPointingCylinder(fingerPoint);
             OrientSnappingCylinder(fingerPoint);
+
+
+
 
         }
         else
