@@ -7,8 +7,9 @@ public class GameController : MonoBehaviour
     const string VictoryTag = "VictoryZone";
     const string DeathTag = "DeathZone";
 
-    public GameObject GameOverUI;
     public AudioSource Ambient;
+    public AudioSource Victory;
+    public AudioSource Loss;
     public GameObject[] Feet;
 
 
@@ -34,13 +35,13 @@ public class GameController : MonoBehaviour
     private void GameWin()
     {
         BlockOutsideStimuli();
-        GameOverUI.SetActive(true);
+        Victory.Play();
     }
 
     private void GameLost()
     {
         BlockOutsideStimuli();
-        GameOverUI.SetActive(true);
+        Loss.Play();
     }
 
     private void BlockOutsideStimuli()
