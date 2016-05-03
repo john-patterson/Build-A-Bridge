@@ -193,10 +193,7 @@ public class PointSpawner : MonoBehaviour
     #endregion
 
     #region Input Resources
-    private bool GetSetupReady()
-    {
-        return !Input.GetKeyDown(KeyCode.Z);
-    }
+
 
     private bool GetBridgeFinished()
     {
@@ -216,7 +213,7 @@ public class PointSpawner : MonoBehaviour
         _mouseLock = false;
         _leapLock = false;
         _bridgeDoneLock = false;
-        _setupLock = true;
+        _setupLock = false;
     }
 
     bool CheckLocks(params bool[] list)
@@ -283,15 +280,13 @@ public class PointSpawner : MonoBehaviour
     {
         if (!LeapDebug)
         {
-            if (_setupLock)
-                _setupLock = GetSetupReady();
 
             if (!CylinderObj.gameObject.activeSelf) return;
 
             var fingerPoint = PointerFinger.GetBoneCenter(PointerFingerType);
             OrientPointingCylinder(fingerPoint);
             OrientSnappingCylinder(fingerPoint);
-
+            
 
 
 
