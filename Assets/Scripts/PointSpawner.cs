@@ -130,7 +130,7 @@ public class PointSpawner : MonoBehaviour
         get {
             var delta_x = _width/GridN;
             var delta_y = _height/GridN;
-            return Math.Sqrt(delta_x*delta_x + delta_y*delta_y);
+            return Math.Sqrt(delta_x*delta_x + delta_y*delta_y) + 0.3f;
         }
     }
 
@@ -386,10 +386,6 @@ public class PointSpawner : MonoBehaviour
 	}
     #endregion Game Loop
 
-    void InvalidPlankLength()
-    {
-        
-    }
 
     void SpawnPoint()
     {
@@ -401,7 +397,6 @@ public class PointSpawner : MonoBehaviour
         var previousPoint = _plankPoints.Any() ? _plankPoints.Last() : StartPoint.position;
         if ((vertex - previousPoint).magnitude > MaximumSpaceBetwenGridPoints)
         {
-            InvalidPlankLength();
             return;
         }
 
