@@ -35,12 +35,14 @@ public class GameController : MonoBehaviour
     private void GameWin()
     {
         BlockOutsideStimuli();
+        Loss.Stop();
         Victory.Play();
     }
 
     private void GameLost()
     {
         BlockOutsideStimuli();
+        Victory.Stop();
         Loss.Play();
     }
 
