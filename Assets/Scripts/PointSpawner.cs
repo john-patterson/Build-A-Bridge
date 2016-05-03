@@ -358,6 +358,11 @@ public class PointSpawner : MonoBehaviour
             return;
         }
 
+        if (_plankPoints.Any() && _plankPoints.Contains(vertex))
+        {
+            return;
+        }
+
 
         _points.Add((Transform)Instantiate(Sphere, vertex, Quaternion.identity));
         if (_plankPoints.Any())
