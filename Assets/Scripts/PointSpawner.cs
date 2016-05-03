@@ -55,7 +55,12 @@ public class PointSpawner : MonoBehaviour
 
     public RigidFinger PointerFinger;
     private int PointerFingerType { get { return (int) PointerFinger.fingerType; } }
-    
+
+
+
+    private Transform _ghostPlankToStart;
+    private Transform _ghostPlankToEnd;
+    private Transform _ghostPlankToPrevious;
 
 
 
@@ -276,8 +281,49 @@ public class PointSpawner : MonoBehaviour
         SnappingObj.OrientCylinder(origin, ray);
     }
 
+    void UpdateGhostedPlanks()
+    {
+        if (_ghostPlankToPrevious != null)
+        {
+            _ghostPlankToPrevious.gameObject.SetActive(false);
+            Destroy(_ghostPlankToPrevious);
+        }
+        if (_ghostPlankToEnd != null)
+        {
+            _ghostPlankToEnd.gameObject.SetActive(false);
+            Destroy(_ghostPlankToEnd);
+        };
+
+        if (_ghostPlankToStart == null && _plankPoints.Any())
+        {
+            _ghostPlankToStart = DrawPlank(_startCoord, _plankPoints.First());
+            _ghostPlankToStart.GetComponent<MeshRenderer>().material.color = Color.white;
+        }
+
+
+        RaycastHit hitPt;
+        if (!GetPlaneIntersection(out hitPt))
+        {
+            return;
+        };
+        var vertex = _verticies[EncodeToIndex(hitPt.point)];
+
+        _ghostPlankToPrevious = DrawPlank(!_plankPoints.Any() ? _startCoord : _plankPoints.Last(), vertex);
+        _ghostPlankToEnd = DrawPlank(vertex, _endCoord);
+
+        var previousPoint = _plankPoints.Any() ? _plankPoints.Last() : StartPoint.position;
+        var tooFar = (vertex - previousPoint).magnitude > MaximumSpaceBetwenGridPoints;
+
+
+        _ghostPlankToPrevious.GetComponent<MeshRenderer>().material.color = tooFar ? Color.red : Color.cyan;
+        _ghostPlankToEnd.GetComponent<MeshRenderer>().material.color = tooFar ? Color.red : Color.cyan;
+
+    }
+
+
     void Update()
     {
+        UpdateGhostedPlanks();
         if (!LeapDebug)
         {
 
@@ -321,6 +367,7 @@ public class PointSpawner : MonoBehaviour
 
         }
 
+        
 	    if (GetPlacePoint())
 	    {
 	        if (CheckLocks(_mouseLock && LeapDebug, _leapLock && !LeapDebug)) return;
