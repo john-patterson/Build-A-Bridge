@@ -315,8 +315,8 @@ public class PointSpawner : MonoBehaviour
         var tooFar = (vertex - previousPoint).magnitude > MaximumSpaceBetwenGridPoints;
 
 
-        _ghostPlankToPrevious.GetComponent<MeshRenderer>().material.color = tooFar ? Color.red : Color.cyan;
-        _ghostPlankToEnd.GetComponent<MeshRenderer>().material.color = tooFar ? Color.red : Color.cyan;
+        _ghostPlankToPrevious.GetComponent<MeshRenderer>().material.color = (tooFar ? Color.red : Color.cyan) * new Vector4(1,1,1,.5f);
+        _ghostPlankToEnd.GetComponent<MeshRenderer>().material.color = (tooFar ? Color.red : Color.cyan) * new Vector4(1, 1, 1, .5f); ;
 
     }
 
